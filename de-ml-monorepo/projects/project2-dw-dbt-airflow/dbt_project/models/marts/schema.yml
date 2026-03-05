@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: daily_event_metrics
+    description: Daily aggregate of event counts per event type
+    columns:
+      - name: event_date
+        description: Date of the events
+        tests:
+          - not_null
+      - name: event_type
+        description: Type of event (click, view, purchase, scroll)
+        tests:
+          - not_null
+      - name: event_count
+        description: Number of events for that date/type combination
+        tests:
+          - not_null
+
+  - name: volume_stats
+    description: Row-count snapshot for all pipeline tables (used in Superset dashboards)
+    columns:
+      - name: table_name
+        description: Name of the table or view
+        tests:
+          - not_null
+      - name: row_count
+        description: Current number of rows
+        tests:
+          - not_null

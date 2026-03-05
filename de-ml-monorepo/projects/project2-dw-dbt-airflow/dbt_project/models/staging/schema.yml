@@ -1,0 +1,36 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: public
+    tables:
+      - name: raw_events
+        description: Raw events ingested by the Kafka-Spark pipeline
+        columns:
+          - name: id
+            description: Auto-incremented primary key
+            tests:
+              - unique
+              - not_null
+          - name: ts
+            description: Event timestamp
+            tests:
+              - not_null
+          - name: user_id
+            description: User identifier
+
+      - name: event_agg
+        description: Windowed event aggregates written by the Spark streaming job
+        columns:
+          - name: window_start
+            description: Start of the 1-minute aggregation window
+            tests:
+              - not_null
+          - name: window_end
+            description: End of the 1-minute aggregation window
+            tests:
+              - not_null
+          - name: event_count
+            description: Number of events in the window
+            tests:
+              - not_null
