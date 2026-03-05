@@ -153,13 +153,14 @@ if __name__ == "__main__":
 
 <div align="center">
 
-**Languages**
+**Languages & Core Technologies**
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Bash](https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
+![YAML](https://img.shields.io/badge/YAML-CB171E?style=for-the-badge&logo=yaml&logoColor=white)
 
 **Big Data & Streaming**
 
@@ -173,12 +174,15 @@ if __name__ == "__main__":
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![MinIO](https://img.shields.io/badge/MinIO-C72E49?style=for-the-badge&logo=minio&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![Oracle](https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white)
+![MSSQL](https://img.shields.io/badge/Microsoft_SQL_Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)
 
 **ML & AI**
 
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![Keras](https://img.shields.io/badge/Keras-D00000?style=for-the-badge&logo=keras&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
 
@@ -187,6 +191,7 @@ if __name__ == "__main__":
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
 **Frameworks & APIs**
@@ -195,6 +200,50 @@ if __name__ == "__main__":
 ![Apache Superset](https://img.shields.io/badge/Apache%20Superset-20A6C9?style=for-the-badge&logo=apache&logoColor=white)
 
 </div>
+
+<br>
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+
+## 📋 Описание проекта / Project Description
+
+### 🇷🇺 Русское описание (Russian Description)
+
+**Ultimate Data Engineering Projects** — это комплексный учебный проект, который показывает, как работают современные системы обработки данных. Проект состоит из трех частей, которые работают вместе и показывают разные аспекты data engineering.
+
+**Что делает этот проект:**
+- Обрабатывает данные в реальном времени с помощью Apache Kafka и Spark
+- Строит хранилище данных (data warehouse) с помощью dbt и Airflow  
+- Создает и развертывает модели машинного обучения через FastAPI
+- Показывает, как все компоненты работают вместе в одной системе
+
+**Зачем это нужно:**
+Этот проект помогает понять, как строятся современные системы данных в больших компаниях. Вы увидите, как данные проходят путь от сбора до анализа и как разные инструменты работают вместе.
+
+**Кто может использовать:**
+- Студенты, изучающие data engineering
+- Начинающие дата-инженеры
+- Разработчики, которые хотят понять системы больших данных
+- Команды, которым нужен пример современной архитектуры
+
+### 🇬🇧 English Description
+
+**Ultimate Data Engineering Projects** is a comprehensive learning project that demonstrates how modern data processing systems work. The project has three parts that work together to show different aspects of data engineering.
+
+**What this project does:**
+- Processes real-time data using Apache Kafka and Spark
+- Builds a data warehouse using dbt and Airflow
+- Creates and deploys machine learning models via FastAPI
+- Shows how all components work together in one system
+
+**Why you need this:**
+This project helps you understand how modern data systems are built in large companies. You will see how data travels from collection to analysis and how different tools work together.
+
+**Who can use this:**
+- Students learning data engineering
+- Beginning data engineers
+- Developers who want to understand big data systems
+- Teams that need an example of modern architecture
 
 <br>
 
