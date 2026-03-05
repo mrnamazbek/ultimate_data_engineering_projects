@@ -1,8 +1,8 @@
 version: "3.9"
 
-# Common Airflow env block re-used by several services
+# Common env used by all Airflow services
 x-airflow-common: &airflow-common
-  image: apache/airflow:2.11.1-python3.10
+  image: apache/airflow:3.1.6-python3.10
   environment:
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-deuser}:${POSTGRES_PASSWORD:-depassword}@postgres/${POSTGRES_DB:-dedb}
@@ -11,6 +11,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
   volumes:
     - ./projects/project2-dw-dbt-airflow/airflow/dags:/opt/airflow/dags
+    - ./projects/project2-dw-dbt-airflow/dbt_project:/opt/airflow/dbt
   depends_on:
     postgres:
       condition: service_healthy
@@ -76,7 +77,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── Spark ────────────────────────────────────────────────────────────────────
+  # ── Spark ─────────────────────────────────────────────────────────────────
   spark-master:
     image: bitnami/spark:3.5
     ports:
@@ -93,7 +94,7 @@ services:
     depends_on:
       - spark-master
 
-  # ── Project 1 ────────────────────────────────────────────────────────────────
+  # ── Project 1 ─────────────────────────────────────────────────────────────
   kafka-producer:
     build:
       context: ./projects/project1-kafka-spark/services/kafka_producer
@@ -128,14 +129,24 @@ services:
       postgres:
         condition: service_healthy
 
-  # ── Project 2 ────────────────────────────────────────────────────────────────
+  # ── Project 2 ─────────────────────────────────────────────────────────────
+  # One-time init: migrate DB and create admin user via Docker entrypoint vars
   airflow-init:
     <<: *airflow-common
-    entrypoint: >
-      bash -c "airflow db migrate && airflow users create
-        --username admin --password admin
-        --firstname Admin --lastname User
-        --role Admin --email admin@example.com"
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - exec /entrypoint airflow version
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-deuser}:${POSTGRES_PASSWORD:-depassword}@postgres/${POSTGRES_DB:-dedb}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY:-changeme_generate_with_fernet}
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY:-changeme_webserver_secret}
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      _AIRFLOW_DB_MIGRATE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_ADMIN_USER:-admin}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:-admin}
     profiles: ["init"]
 
   airflow-webserver:
@@ -167,7 +178,7 @@ services:
         condition: service_healthy
     profiles: ["dbt"]
 
-  # ── Project 3 ────────────────────────────────────────────────────────────────
+  # ── Project 3 ─────────────────────────────────────────────────────────────
   trainer:
     build:
       context: ./projects/project3-ml-deploy/trainer
@@ -190,7 +201,40 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── BI – Apache Superset ───────────────────────────────────────────────────
+  # Connects to Postgres; exposes dashboards for all three projects at :8088
+  superset:
+    image: apache/superset:6.0.0
+    ports:
+      - "8088:8088"
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-superset_dev_secret_change_me}
+    volumes:
+      - superset_home:/app/superset_home
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # init + start in one step; || true avoids failure if user already exists
+    command: >
+      bash -c "
+        superset db upgrade &&
+        superset fab create-admin
+          --username admin
+          --firstname Admin
+          --lastname Admin
+          --email admin@example.com
+          --password admin 2>&1 | grep -v 'already exists' &&
+        superset init &&
+        superset run -p 8088 --with-threads
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 volumes:
   pgdata:
   minio_data:
   model_data:
+  superset_home:

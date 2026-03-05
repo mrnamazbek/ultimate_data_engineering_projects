@@ -18,3 +18,19 @@ sources:
               - not_null
           - name: user_id
             description: User identifier
+
+      - name: event_agg
+        description: Windowed event aggregates written by the Spark streaming job
+        columns:
+          - name: window_start
+            description: Start of the 1-minute aggregation window
+            tests:
+              - not_null
+          - name: window_end
+            description: End of the 1-minute aggregation window
+            tests:
+              - not_null
+          - name: event_count
+            description: Number of events in the window
+            tests:
+              - not_null
