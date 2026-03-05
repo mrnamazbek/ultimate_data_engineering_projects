@@ -1,0 +1,8 @@
+hdfs3==0.3.1
+pyhive==0.6.5
+pandas==2.0.3
+numpy==1.24.3
+psycopg2-binary==2.9.7
+sqlalchemy==2.0.19
+pyarrow==12.0.1
+requests==2.31.0

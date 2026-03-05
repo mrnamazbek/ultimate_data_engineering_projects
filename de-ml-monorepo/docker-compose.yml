@@ -77,6 +77,82 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── Hadoop Ecosystem ──────────────────────────────────────────────────────
+  namenode:
+    image: apache/hadoop:3.3.6
+    ports:
+      - "9870:9870"  # Hadoop NameNode Web UI
+      - "8020:8020"  # HDFS port
+    environment:
+      CLUSTER_NAME: hadoop-cluster
+    command: ["hdfs", "namenode"]
+    volumes:
+      - hadoop_namenode:/opt/hadoop/logs
+
+  datanode:
+    image: apache/hadoop:3.3.6
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    command: ["hdfs", "datanode"]
+    depends_on:
+      - namenode
+    volumes:
+      - hadoop_datanode:/opt/hadoop/logs
+
+  yarn-resourcemanager:
+    image: apache/hadoop:3.3.6
+    ports:
+      - "8088:8088"  # YARN ResourceManager Web UI
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    command: ["yarn", "resourcemanager"]
+    depends_on:
+      - namenode
+
+  yarn-nodemanager:
+    image: apache/hadoop:3.3.6
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870 yarn-resourcemanager:8088"
+    command: ["yarn", "nodemanager"]
+    depends_on:
+      - yarn-resourcemanager
+
+  hive-metastore:
+    image: apache/hive:4.0.0
+    ports:
+      - "9083:9083"  # Hive Metastore
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870 postgres:5432"
+      DB_DRIVER: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+      namenode:
+        condition: service_started
+
+  # ── Apache Flink ──────────────────────────────────────────────────────────
+  flink-jobmanager:
+    image: apache/flink:1.18-java11
+    ports:
+      - "8081:8081"  # Flink Web UI
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        parallelism.default: 2
+    command: ["jobmanager"]
+
+  flink-taskmanager:
+    image: apache/flink:1.18-java11
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        parallelism.default: 2
+    command: ["taskmanager"]
+    depends_on:
+      - flink-jobmanager
+
   # ── Spark ─────────────────────────────────────────────────────────────────
   spark-master:
     image: bitnami/spark:3.5
@@ -233,8 +309,70 @@ services:
       timeout: 10s
       retries: 5
 
+  # ── Project 4 (Flink Streaming) ──────────────────────────────────────────
+  flink-streaming-job:
+    build:
+      context: ./projects/project4-flink-streaming
+    environment:
+      KAFKA_BROKER: ${KAFKA_BROKER:-kafka:9092}
+      KAFKA_TOPIC: ${KAFKA_TOPIC:-events}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_USER:-deuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-depassword}
+      POSTGRES_DB: ${POSTGRES_DB:-dedb}
+    depends_on:
+      flink-jobmanager:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    profiles: ["flink"]
+
+  # ── Project 5 (Hadoop Batch Processing) ──────────────────────────────────
+  hadoop-batch-job:
+    build:
+      context: ./projects/project5-hadoop-batch
+    environment:
+      HDFS_NAMENODE: namenode:8020
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_USER:-deuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-depassword}
+      POSTGRES_DB: ${POSTGRES_DB:-dedb}
+    depends_on:
+      namenode:
+        condition: service_started
+      yarn-resourcemanager:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    profiles: ["hadoop"]
+
+  # ── Big Data Sources Generator ────────────────────────────────────────────
+  data-generator:
+    build:
+      context: ./projects/data-sources
+    environment:
+      KAFKA_BROKER: ${KAFKA_BROKER:-kafka:9092}
+      HDFS_NAMENODE: namenode:8020
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      GENERATION_RATE: ${BIG_DATA_RATE:-100}  # events per second
+    depends_on:
+      kafka:
+        condition: service_healthy
+      namenode:
+        condition: service_started
+    profiles: ["bigdata"]
+
 volumes:
   pgdata:
   minio_data:
   model_data:
   superset_home:
+  hadoop_namenode:
+  hadoop_datanode:
+  hadoop_logs:
