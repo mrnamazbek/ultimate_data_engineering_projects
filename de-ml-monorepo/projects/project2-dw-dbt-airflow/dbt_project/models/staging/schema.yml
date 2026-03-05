@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: public
+    tables:
+      - name: raw_events
+        description: Raw events ingested by the Kafka-Spark pipeline
+        columns:
+          - name: id
+            description: Auto-incremented primary key
+            tests:
+              - unique
+              - not_null
+          - name: ts
+            description: Event timestamp
+            tests:
+              - not_null
+          - name: user_id
+            description: User identifier

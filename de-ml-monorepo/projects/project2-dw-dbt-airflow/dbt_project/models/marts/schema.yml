@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: daily_event_metrics
+    description: Daily aggregate of event counts per event type
+    columns:
+      - name: event_date
+        description: Date of the events
+        tests:
+          - not_null
+      - name: event_type
+        description: Type of event (click, view, purchase, scroll)
+        tests:
+          - not_null
+      - name: event_count
+        description: Number of events for that date/type combination
+        tests:
+          - not_null

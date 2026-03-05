@@ -1,0 +1,196 @@
+version: "3.9"
+
+# Common Airflow env block re-used by several services
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.9.1-python3.10
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-deuser}:${POSTGRES_PASSWORD:-depassword}@postgres/${POSTGRES_DB:-dedb}
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY:-changeme_generate_with_fernet}
+    AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY:-changeme_webserver_secret}
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+  volumes:
+    - ./projects/project2-dw-dbt-airflow/airflow/dags:/opt/airflow/dags
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  # ── Infrastructure ──────────────────────────────────────────────────────────
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: bitnami/kafka:3.6
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-deuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-depassword}
+      POSTGRES_DB: ${POSTGRES_DB:-dedb}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-deuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Spark ────────────────────────────────────────────────────────────────────
+  spark-master:
+    image: bitnami/spark:3.5
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    environment:
+      SPARK_MODE: master
+
+  spark-worker:
+    image: bitnami/spark:3.5
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+    depends_on:
+      - spark-master
+
+  # ── Project 1 ────────────────────────────────────────────────────────────────
+  kafka-producer:
+    build:
+      context: ./projects/project1-kafka-spark/services/kafka_producer
+    environment:
+      KAFKA_BROKER: ${KAFKA_BROKER:-kafka:9092}
+      KAFKA_TOPIC: ${KAFKA_TOPIC:-events}
+      PRODUCER_RATE: ${PRODUCER_RATE:-1}
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  spark-job:
+    build:
+      context: ./projects/project1-kafka-spark/spark_job
+    environment:
+      KAFKA_BROKER: ${KAFKA_BROKER:-kafka:9092}
+      KAFKA_TOPIC: ${KAFKA_TOPIC:-events}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-raw-events}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_USER:-deuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-depassword}
+      POSTGRES_DB: ${POSTGRES_DB:-dedb}
+    depends_on:
+      kafka:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  # ── Project 2 ────────────────────────────────────────────────────────────────
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: >
+      bash -c "airflow db migrate && airflow users create
+        --username admin --password admin
+        --firstname Admin --lastname User
+        --role Admin --email admin@example.com"
+    profiles: ["init"]
+
+  airflow-webserver:
+    <<: *airflow-common
+    ports:
+      - "8085:8080"
+    command: webserver
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+
+  dbt-runner:
+    build:
+      context: ./projects/project2-dw-dbt-airflow/dbt_project
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_USER:-deuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-depassword}
+      POSTGRES_DB: ${POSTGRES_DB:-dedb}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: ["dbt"]
+
+  # ── Project 3 ────────────────────────────────────────────────────────────────
+  trainer:
+    build:
+      context: ./projects/project3-ml-deploy/trainer
+    volumes:
+      - model_data:/models
+    profiles: ["train"]
+
+  model-api:
+    build:
+      context: ./projects/project3-ml-deploy/app
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_PATH: ${MODEL_PATH:-/models/model.pkl}
+    volumes:
+      - model_data:/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  minio_data:
+  model_data:

@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# dbt artifacts
+de-ml-monorepo/projects/project2-dw-dbt-airflow/dbt_project/target/
+de-ml-monorepo/projects/project2-dw-dbt-airflow/dbt_project/dbt_packages/
+de-ml-monorepo/projects/project2-dw-dbt-airflow/dbt_project/logs/
+
+# Model artifacts
+*.pkl
+
+# Downloaded data
+de-ml-monorepo/data/nyc_taxi/
+de-ml-monorepo/data/movielens/
+
+# Pytest cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+
+# Misc
+*.log
+.DS_Store
