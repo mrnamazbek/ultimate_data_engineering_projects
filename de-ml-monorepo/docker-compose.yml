@@ -2,7 +2,7 @@ version: "3.9"
 
 # Common Airflow env block re-used by several services
 x-airflow-common: &airflow-common
-  image: apache/airflow:2.9.1-python3.10
+  image: apache/airflow:2.11.1-python3.10
   environment:
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-deuser}:${POSTGRES_PASSWORD:-depassword}@postgres/${POSTGRES_DB:-dedb}
