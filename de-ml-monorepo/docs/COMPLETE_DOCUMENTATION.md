@@ -69,12 +69,12 @@ make stop-all      # Остановить все сервисы
 └─────────────────────────────────────────────────┘
                         │
 ┌─────────────────────────────────────────────────┐
-│           STREAMING & INGESTION                  │
+│           STREAMING & INGESTION                 │
 │  • Kafka  • Spark Streaming  • Flink            │
 └─────────────────────────────────────────────────┘
                         │
 ┌─────────────────────────────────────────────────┐
-│              STORAGE LAYER                       │
+│              STORAGE LAYER                      │
 │  • PostgreSQL  • MinIO  • Redis  • HDFS         │
 └─────────────────────────────────────────────────┘
                         │
@@ -228,7 +228,7 @@ de-ml-monorepo/
 
 ## 📞 Поддержка
 
-- **Email**: namazbek.bekzhanov@example.com
+- **Email**: contact@example.com
 - **GitHub Issues**: [Create Issue](https://github.com/yourusername/project/issues)
 - **Documentation**: Эта папка `/docs`
 

@@ -62,8 +62,8 @@ nano .env
 Обязательные переменные:
 ```env
 # Database
-POSTGRES_USER=namazbek
-POSTGRES_PASSWORD=YourStrongPassword123!
+POSTGRES_USER=your_db_user
+POSTGRES_PASSWORD=your_secure_password
 POSTGRES_DB=fraud_detection
 
 # Kafka
@@ -72,8 +72,8 @@ KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
 KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
 
 # MinIO
-MINIO_ROOT_USER=namazbek
-MINIO_ROOT_PASSWORD=YourMinioPassword123!
+MINIO_ROOT_USER=your_minio_user
+MINIO_ROOT_PASSWORD=your_secure_password
 MINIO_DEFAULT_BUCKETS=fraud-detection,models,checkpoints
 
 # Airflow
@@ -202,7 +202,7 @@ open /Applications/Docker.app
 #### PostgreSQL setup
 ```bash
 # Создание базы данных и схем
-docker exec -it postgres psql -U namazbek -d postgres <<EOF
+docker exec -it postgres psql -U your_db_user -d postgres <<EOF
 CREATE DATABASE fraud_detection;
 \c fraud_detection;
 
@@ -287,7 +287,7 @@ docker-compose run --rm airflow-webserver airflow users create \
     --lastname User \
     --role Admin \
     --email admin@fraud-detection.com \
-    --password admin123
+    --password your_admin_password
 
 # Создание connection для PostgreSQL
 docker-compose run --rm airflow-webserver airflow connections add \
@@ -295,8 +295,8 @@ docker-compose run --rm airflow-webserver airflow connections add \
     --conn-type 'postgres' \
     --conn-host 'postgres' \
     --conn-schema 'fraud_detection' \
-    --conn-login 'namazbek' \
-    --conn-password 'YourStrongPassword123!' \
+    --conn-login 'your_db_user' \
+    --conn-password 'your_secure_password' \
     --conn-port 5432
 
 # Запуск Airflow сервисов
@@ -307,7 +307,7 @@ docker-compose up -d airflow-webserver airflow-scheduler
 
 ```bash
 # Создание buckets
-docker exec -it minio mc alias set local http://localhost:9000 namazbek YourMinioPassword123!
+docker exec -it minio mc alias set local http://localhost:9000 your_minio_user your_minio_password
 
 docker exec -it minio mc mb local/fraud-detection
 docker exec -it minio mc mb local/models
@@ -586,10 +586,10 @@ docker-compose down -v
 docker system prune -a
 
 # Backup базы данных
-docker exec postgres pg_dump -U namazbek fraud_detection | gzip > backup.sql.gz
+docker exec postgres pg_dump -U your_db_user fraud_detection | gzip > backup.sql.gz
 
 # Восстановление из backup
-gunzip -c backup.sql.gz | docker exec -i postgres psql -U namazbek fraud_detection
+gunzip -c backup.sql.gz | docker exec -i postgres psql -U your_db_user fraud_detection
 ```
 
 ---

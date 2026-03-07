@@ -223,10 +223,10 @@ ORDER BY fraud_count DESC;
 ## 📞 Контакты и поддержка
 
 ### Автор
-**Namazbek Bekzhanov**
-- Email: namazbek.bekzhanov@example.com
-- LinkedIn: [/in/mrnamazbek](https://linkedin.com/in/mrnamazbek)
-- GitHub: [@mrnamazbek](https://github.com/mrnamazbek)
+**Project Author**
+- Email: contact@example.com
+- LinkedIn: [LinkedIn Profile]
+- GitHub: [GitHub Profile]
 
 ### Поддержка
 - **Documentation**: В этой папке

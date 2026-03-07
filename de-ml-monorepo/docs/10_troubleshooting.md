@@ -1199,7 +1199,7 @@ done
 # 6. Восстановление базы данных из backup
 if [ -f "backups/latest/postgres_backup.sql.gz" ]; then
     echo "Restoring database..."
-    gunzip < backups/latest/postgres_backup.sql.gz | docker exec -i postgres psql -U namazbek fraud_detection
+    gunzip < backups/latest/postgres_backup.sql.gz | docker exec -i postgres psql -U ${POSTGRES_USER} fraud_detection
 fi
 
 # 7. Запуск приложения

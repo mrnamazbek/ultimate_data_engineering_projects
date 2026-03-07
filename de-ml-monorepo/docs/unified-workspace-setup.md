@@ -28,7 +28,7 @@ ultimate_data_engineering_projects/
 ## 🚀 Makefile для управления всем проектом
 
 ```makefile
-# /Users/namazbekbekzhanov/PycharmProjects/PythonProject/ultimate_data_engineering_projects/de-ml-monorepo/Makefile
+# ~/projects/de-ml-monorepo/Makefile
 
 .PHONY: help setup start-all stop-all fraud-start fraud-stop notebook mlflow clean
 
@@ -135,7 +135,7 @@ show-urls: ## Показать все URL сервисов
 	@echo "$(YELLOW)Core Services:$(NC)"
 	@echo "  Airflow:    http://localhost:8085 (admin/admin)"
 	@echo "  Superset:   http://localhost:8088 (admin/admin)"
-	@echo "  MinIO:      http://localhost:9001 (namazbek/bekzhanov)"
+	@echo "  MinIO:      http://localhost:9001 (check .env file)"
 	@echo "  MLflow:     http://localhost:5000"
 	@echo ""
 	@echo "$(YELLOW)Fraud Detection:$(NC)"
@@ -170,7 +170,7 @@ clean: ## Очистить временные файлы и кеши
 backup: ## Создать backup данных
 	@echo "$(GREEN)Creating backup...$(NC)"
 	mkdir -p backups/$(shell date +%Y%m%d)
-	docker exec postgres pg_dump -U namazbek dedb | gzip > backups/$(shell date +%Y%m%d)/postgres.sql.gz
+	docker exec postgres pg_dump -U ${POSTGRES_USER} ${POSTGRES_DB} | gzip > backups/$(shell date +%Y%m%d)/postgres.sql.gz
 	docker exec fraud-ml-trainer tar -czf - /app/models | gzip > backups/$(shell date +%Y%m%d)/models.tar.gz
 
 reset-all: ## Полный сброс (ОСТОРОЖНО!)
@@ -183,7 +183,7 @@ reset-all: ## Полный сброс (ОСТОРОЖНО!)
 ### Веб-интерфейс для управления всеми сервисами
 
 ```python
-# /Users/namazbekbekzhanov/PycharmProjects/PythonProject/ultimate_data_engineering_projects/de-ml-monorepo/scripts/control_panel.py
+# ~/projects/de-ml-monorepo/scripts/control_panel.py
 
 import streamlit as st
 import docker
@@ -240,7 +240,7 @@ if section == "Overview":
         # Database connections
         try:
             db_info = subprocess.check_output(
-                ["docker", "exec", "postgres", "psql", "-U", "namazbek", "-c", 
+                ["docker", "exec", "postgres", "psql", "-U", os.getenv("POSTGRES_USER", "postgres"), "-c", 
                  "SELECT count(*) FROM pg_stat_activity;"]
             )
             db_connections = int(db_info.decode().split()[2])

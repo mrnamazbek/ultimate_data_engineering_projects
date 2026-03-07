@@ -237,8 +237,8 @@ max_wal_size = 4GB
 ```python
 # Интеграция с Spark
 spark.conf.set("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")
-spark.conf.set("spark.hadoop.fs.s3a.access.key", "namazbek")
-spark.conf.set("spark.hadoop.fs.s3a.secret.key", "bekzhanov")
+spark.conf.set("spark.hadoop.fs.s3a.access.key", "your_access_key")
+spark.conf.set("spark.hadoop.fs.s3a.secret.key", "your_secret_key")
 spark.conf.set("spark.hadoop.fs.s3a.path.style.access", "true")
 
 df.write.mode("overwrite").parquet("s3a://fraud-detection/processed/")
