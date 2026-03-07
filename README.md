@@ -133,17 +133,17 @@ if __name__ == "__main__":
 │  │ Kafka+Spark │  │ DW+dbt+Airl │  │  ML Deploy  │  │Flink Stream │  │Hadoop  │ │
 │  │             │  │             │  │             │  │             │  │Batch   │ │
 │  │  Kafka      │  │ Airflow 3.6 │  │  Trainer    │  │   Flink     │  │        │ │
-│  │    ↓        │  │     ↓       │  │(scikit-learn)│  │     ↓       │  │ HDFS   │ │
+│  │    ↓        │  │     ↓       │  │scikit-learn │  │     ↓       │  │ HDFS   │ │
 │  │  Spark      │  │ dbt-postgres│  │     ↓       │  │ Stateful    │  │  ↓     │ │
 │  │ Streaming   │──│ ELT models  │  │ model.pkl   │  │Processing   │  │ Hive   │ │
 │  │   ↓    ↓    │  │     ↓       │  │     ↓       │  │     ↓       │  │  ↓     │ │
-│  │MinIO Postgres│ │ Postgres DWH│  │  FastAPI    │  │  Postgres   │  │Analytics│ │
+│  │MinIO Postgre│  │ Postgres DWH│  │  FastAPI    │  │  Postgres   │  │Analytic│ │
 │  └─────────────┘  └─────────────┘  │  /predict   │  └─────────────┘  └────────┘ │
 │                                    └─────────────┘                              │
 │                                                                                 │
-│  ──────────────────── Enhanced Infrastructure ────────────────────────────     │
-│  PostgreSQL 15 · MinIO/S3 · Kafka · Spark 3.5 · Flink 1.18 · Hadoop/HDFS     │
-│  Zookeeper · Airflow 3.1.6 · Superset 6.0 · YARN Resource Manager             │
+│  ──────────────────── Enhanced Infrastructure ────────────────────────────      │
+│  PostgreSQL 15 · MinIO/S3 · Kafka · Spark 3.5 · Flink 1.18 · Hadoop/HDFS        │
+│  Zookeeper · Airflow 3.1.6 · Superset 6.0 · YARN Resource Manager               │
 └─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
