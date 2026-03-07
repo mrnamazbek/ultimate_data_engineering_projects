@@ -275,7 +275,7 @@ MinIO is an S3-compatible object store — it holds the **raw parquet lake**.
 
 ### Explore via console
 
-Open **http://localhost:9001** → login `minioadmin / minioadmin`
+Open **http://localhost:9001** → login `gemini / claude`
 
 Navigate to `raw-events → events →` to see date-partitioned Parquet files:
 
@@ -306,7 +306,7 @@ The `event_agg` table is created by `scripts/init-db.sh` on first Postgres start
 
 ```sql
 -- connect
-docker compose exec postgres psql -U deuser -d dedb
+docker compose exec postgres psql -U gemini -d dedb
 
 -- check aggregates
 SELECT window_start, window_end, event_count
@@ -350,7 +350,7 @@ Superset (port 8088) is shared by all three projects.
 
 1. Open **http://localhost:8088** → admin / admin
 2. **Settings → Database Connections → + Database → PostgreSQL**
-3. SQLAlchemy URI: `postgresql://deuser:depassword@postgres:5432/dedb`
+3. SQLAlchemy URI: `postgresql://gemini:claude@postgres:5432/dedb`
 4. Click **Test Connection → Save**
 
 ### Suggested charts for Project 1
@@ -454,13 +454,13 @@ All settings are read from environment variables with safe defaults:
 | `KAFKA_TOPIC` | `events` | Topic name |
 | `PRODUCER_RATE` | `1` | Events per second |
 | `MINIO_ENDPOINT` | `minio:9000` | MinIO host:port |
-| `MINIO_ACCESS_KEY` | `minioadmin` | MinIO access key |
-| `MINIO_SECRET_KEY` | `minioadmin` | MinIO secret key |
+| `MINIO_ACCESS_KEY` | `gemini` | MinIO access key |
+| `MINIO_SECRET_KEY` | `claude` | MinIO secret key |
 | `MINIO_BUCKET` | `raw-events` | Target bucket |
 | `POSTGRES_HOST` | `postgres` | Postgres host |
 | `POSTGRES_PORT` | `5432` | Postgres port |
-| `POSTGRES_USER` | `deuser` | DB user |
-| `POSTGRES_PASSWORD` | `depassword` | DB password |
+| `POSTGRES_USER` | `gemini` | DB user |
+| `POSTGRES_PASSWORD` | `claude` | DB password |
 | `POSTGRES_DB` | `dedb` | Database name |
 
 ---

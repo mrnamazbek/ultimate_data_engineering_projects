@@ -23,10 +23,10 @@ docker-compose up --build
 |---------|-----|-------------|
 | Airflow UI | http://localhost:8085 | admin / admin |
 | Superset BI | http://localhost:8088 | admin / admin |
-| MinIO Console | http://localhost:9001 | minioadmin / minioadmin |
+| MinIO Console | http://localhost:9001 | gemini / claude |
 | Spark Master UI | http://localhost:8080 | — |
 | FastAPI | http://localhost:8000/docs | — |
-| Postgres | localhost:5432 | deuser / depassword |
+| Postgres | localhost:5432 | gemini / claude |
 | Kafka | localhost:9092 | — |
 
 ## Requirements

@@ -46,7 +46,7 @@ docker-compose exec airflow-webserver airflow dags trigger dbt_and_load
 
 ## Validation SQL
 ```sql
--- connect: docker-compose exec postgres psql -U deuser -d dedb
+-- connect: docker-compose exec postgres psql -U gemini -d dedb
 
 -- staging view
 SELECT * FROM stg_events LIMIT 5;
@@ -60,7 +60,7 @@ SELECT * FROM volume_stats;
 
 ## Superset BI
 1. Open http://localhost:8088 (admin/admin)
-2. Add Postgres database: `postgresql://deuser:depassword@postgres:5432/dedb`
+2. Add Postgres database: `postgresql://gemini:claude@postgres:5432/dedb`
 3. Explore `daily_event_metrics` and `volume_stats` in SQL Lab or as charts
 
 ## Run tests

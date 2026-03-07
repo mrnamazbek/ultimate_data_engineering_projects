@@ -25,7 +25,7 @@ docker-compose down -v
 docker-compose exec kafka kafka-topics.sh --list --bootstrap-server localhost:9092
 
 # Postgres
-docker-compose exec postgres psql -U deuser -d dedb -c "\dt"
+docker-compose exec postgres psql -U gemini -d dedb -c "\dt"
 
 # MinIO buckets
 docker-compose exec minio mc ls local/
@@ -47,7 +47,7 @@ Login: admin / admin
 ### Connect Superset to the data warehouse
 1. Open **Settings → Database Connections → + Database**
 2. Choose **PostgreSQL**
-3. Enter: `postgresql://deuser:depassword@postgres:5432/dedb`
+3. Enter: `postgresql://gemini:claude@postgres:5432/dedb`
 4. Save and click **Test Connection**
 
 ### Suggested datasets / dashboards
@@ -80,7 +80,7 @@ daily_event_metrics             >=  4
 ## Project 1 – verify streaming pipeline
 
 ```sql
--- connect: docker-compose exec postgres psql -U deuser -d dedb
+-- connect: docker-compose exec postgres psql -U gemini -d dedb
 SELECT * FROM event_agg ORDER BY window_start DESC LIMIT 10;
 ```
 

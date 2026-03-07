@@ -227,8 +227,8 @@ de_project2:
       type: postgres
       host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
       port: "{{ env_var('POSTGRES_PORT', '5432') | int }}"
-      user: "{{ env_var('POSTGRES_USER', 'deuser') }}"
-      pass: "{{ env_var('POSTGRES_PASSWORD', 'depassword') }}"
+      user: "{{ env_var('POSTGRES_USER', 'gemini') }}"
+      pass: "{{ env_var('POSTGRES_PASSWORD', 'claude') }}"
       dbname: "{{ env_var('POSTGRES_DB', 'dedb') }}"
       schema: public
       threads: 1
@@ -342,7 +342,7 @@ In the Airflow UI: DAGs → dbt_and_load → click a run → click a task → Lo
 After `dbt run`, query volume stats from any Postgres client:
 
 ```sql
--- docker compose exec postgres psql -U deuser -d dedb
+-- docker compose exec postgres psql -U gemini -d dedb
 SELECT * FROM volume_stats ORDER BY table_name;
 ```
 
@@ -370,7 +370,7 @@ POSTGRES_HOST=localhost python data/volume_report.py
 
 1. **http://localhost:8088** → admin / admin
 2. **Settings → Database Connections → + Database → PostgreSQL**
-3. URI: `postgresql://deuser:depassword@postgres:5432/dedb`
+3. URI: `postgresql://gemini:claude@postgres:5432/dedb`
 4. Test Connection → Save
 
 ### Suggested Datasets & Charts
@@ -477,8 +477,8 @@ Verifies:
 |----------|---------|---------|
 | `POSTGRES_HOST` | `postgres` | Airflow, dbt |
 | `POSTGRES_PORT` | `5432` | Airflow, dbt |
-| `POSTGRES_USER` | `deuser` | Airflow, dbt |
-| `POSTGRES_PASSWORD` | `depassword` | Airflow, dbt |
+| `POSTGRES_USER` | `gemini` | Airflow, dbt |
+| `POSTGRES_PASSWORD` | `claude` | Airflow, dbt |
 | `POSTGRES_DB` | `dedb` | Airflow, dbt |
 | `AIRFLOW__CORE__FERNET_KEY` | *(change me)* | Airflow encryption |
 | `AIRFLOW__WEBSERVER__SECRET_KEY` | *(change me)* | Airflow web sessions |

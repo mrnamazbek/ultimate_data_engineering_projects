@@ -22,7 +22,7 @@ docker-compose up --build zookeeper kafka postgres minio spark-master spark-work
 
 ### Check aggregates in Postgres
 ```sql
--- docker-compose exec postgres psql -U deuser -d dedb
+-- docker-compose exec postgres psql -U gemini -d dedb
 SELECT * FROM event_agg ORDER BY window_start DESC LIMIT 10;
 ```
 Expected: rows appear within ~1 minute of the producer starting.

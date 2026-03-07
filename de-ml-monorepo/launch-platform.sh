@@ -180,7 +180,7 @@ show_service_urls() {
     echo -e "\n${CYAN}🌐 Web Interfaces Available:${NC}"
     echo -e "${GREEN}📊 Apache Superset:${NC}     http://localhost:8088 (admin/admin)"
     echo -e "${GREEN}🔄 Apache Airflow:${NC}      http://localhost:8085 (admin/admin)" 
-    echo -e "${GREEN}💾 MinIO Console:${NC}       http://localhost:9001 (minioadmin/minioadmin)"
+    echo -e "${GREEN}💾 MinIO Console:${NC}       http://localhost:9001 (gemini/claude)"
     echo -e "${GREEN}🚀 Spark UI:${NC}            http://localhost:8080"
     echo -e "${GREEN}🤖 ML API Docs:${NC}         http://localhost:8000/docs"
 }

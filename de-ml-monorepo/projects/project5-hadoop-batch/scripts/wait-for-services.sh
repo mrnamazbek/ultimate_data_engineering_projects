@@ -21,7 +21,7 @@ echo "✓ YARN ResourceManager is ready"
 
 # Wait for PostgreSQL
 echo "Waiting for PostgreSQL..."
-until pg_isready -h postgres -p 5432 -U deuser >/dev/null 2>&1; do
+until pg_isready -h postgres -p 5432 -U gemini >/dev/null 2>&1; do
     echo "PostgreSQL not ready yet..."
     sleep 5
 done
