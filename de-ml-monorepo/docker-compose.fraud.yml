@@ -1,0 +1,158 @@
+# Fraud Detection Extension for DE-ML Monorepo
+# This adds fraud detection specific services to the main platform
+
+version: "3.9"
+
+services:
+  # ── Fraud Detection Data Sources ──────────────────────────────────────────
+  fraud-generator:
+    build:
+      context: ./projects/data-sources
+      dockerfile: Dockerfile.generators
+    environment:
+      MODE: stream
+      KAFKA_BROKER: kafka:9092
+      KAFKA_TOPIC: fraud-transactions
+      FRAUD_RATE: 0.02
+      TRANSACTION_RATE: 100  # 100 transactions per second
+    depends_on:
+      kafka:
+        condition: service_healthy
+    profiles: ["fraud"]
+    restart: unless-stopped
+
+  # ── Feature Store for Fraud Detection ─────────────────────────────────────
+  feast-feature-store:
+    image: feast/feast:latest
+    environment:
+      FEAST_REPO_PATH: /feast
+    volumes:
+      - ./projects/fraud-detection/feature_store:/feast
+    ports:
+      - "6566:6566"  # Feast UI
+    profiles: ["fraud"]
+    command: feast ui -h 0.0.0.0
+
+  redis-online-store:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    profiles: ["fraud"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── ML Model Training & Serving ───────────────────────────────────────────
+  fraud-ml-trainer:
+    build:
+      context: ./projects/fraud-detection
+      dockerfile: Dockerfile.training
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-deuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-depassword}
+      POSTGRES_DB: fraud_features
+    volumes:
+      - ./projects/fraud-detection/models:/app/models
+      - ./projects/fraud-detection/data:/app/data
+    depends_on:
+      - postgres
+      - mlflow
+    profiles: ["fraud", "training"]
+
+  fraud-api:
+    build:
+      context: ./projects/fraud-detection
+      dockerfile: Dockerfile.api
+    ports:
+      - "8001:8000"  # Different port from main ML API
+    environment:
+      MODEL_PATH: /app/models/latest
+      REDIS_HOST: redis-online-store
+      FEAST_REPO_PATH: /app/feature_store
+      ENABLE_MONITORING: "true"
+    volumes:
+      - ./projects/fraud-detection/models:/app/models:ro
+      - ./projects/fraud-detection/feature_store:/app/feature_store:ro
+    depends_on:
+      - redis-online-store
+    profiles: ["fraud"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Stream Processing for Fraud Detection ─────────────────────────────────
+  fraud-flink-job:
+    build:
+      context: ./projects/fraud-detection
+      dockerfile: Dockerfile.flink
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      REDIS_HOST: redis-online-store
+      CHECKPOINT_DIR: s3://fraud-detection/checkpoints
+      PARALLELISM: 4
+    depends_on:
+      - kafka
+      - redis-online-store
+    profiles: ["fraud", "flink"]
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2'
+
+  # ── Monitoring & Dashboards ───────────────────────────────────────────────
+  fraud-dashboard:
+    build:
+      context: ./projects/fraud-detection
+      dockerfile: Dockerfile.dashboard
+    ports:
+      - "8502:8501"  # Streamlit dashboard
+    environment:
+      POSTGRES_HOST: postgres
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      PROMETHEUS_URL: http://prometheus:9090
+    depends_on:
+      - postgres
+      - prometheus
+    profiles: ["fraud"]
+
+  # ── Data Quality & Validation ─────────────────────────────────────────────
+  great-expectations:
+    image: greatexpectations/great_expectations:latest
+    volumes:
+      - ./projects/fraud-detection/great_expectations:/great_expectations
+      - ./projects/fraud-detection/data:/data
+    environment:
+      GE_HOME: /great_expectations
+    profiles: ["fraud", "quality"]
+    command: ["datasource", "new"]
+
+  # ── Additional Monitoring for Fraud Detection ─────────────────────────────
+  fraud-prometheus-exporter:
+    build:
+      context: ./projects/fraud-detection
+      dockerfile: Dockerfile.exporter
+    ports:
+      - "9091:9091"
+    environment:
+      REDIS_HOST: redis-online-store
+      POSTGRES_HOST: postgres
+      API_URL: http://fraud-api:8000
+    profiles: ["fraud", "monitoring"]
+
+volumes:
+  redis_data:
+  feast_data:
+
+networks:
+  default:
+    name: fraud-detection-network
+    external: false
