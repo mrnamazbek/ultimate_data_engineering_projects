@@ -1,0 +1,146 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+!.env.example
+
+# dbt artifacts
+de-ml-monorepo/projects/project2-dw-dbt-airflow/dbt_project/target/
+de-ml-monorepo/projects/project2-dw-dbt-airflow/dbt_project/dbt_packages/
+de-ml-monorepo/projects/project2-dw-dbt-airflow/dbt_project/logs/
+projects/*/target/
+projects/*/logs/
+
+# Model artifacts
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.model
+*.onnx
+models/
+
+# Downloaded data
+de-ml-monorepo/data/nyc_taxi/
+de-ml-monorepo/data/movielens/
+data/raw/
+data/processed/
+data/external/
+
+# Pytest cache
+.pytest_cache/
+.coverage
+htmlcov/
+*.coverage
+.tox/
+.nox/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+.project
+.pydevproject
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Logs
+*.log
+logs/
+*.out
+*.err
+
+# OS
+.DS_Store
+Thumbs.db
+*~
+
+# Docker
+docker-compose.override.yml
+
+# Secrets and credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+*_credentials.json
+*_token.json
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+*.temp
+backups/
+
+# Database dumps
+*.sql
+*.dump
+*.sqlite
+*.db
+
+# MinIO data
+minio_data/
+.minio.sys/
+
+# Airflow
+airflow.db
+airflow-webserver.pid
+airflow/logs/
+
+# MLflow
+mlruns/
+mlflow.db
+
+# Spark
+spark-warehouse/
+derby.log
+metastore_db/
+
+# Hadoop
+hdfs/
+hadoop/logs/
+
+# Kafka
+kafka-logs/
+
+# Personal files
+personal/
+private/
+TODO.txt
+NOTES.txt
+*.personal
+
+# Node (if any frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Terraform (if using)
+*.tfstate
+*.tfstate.*
+.terraform/
