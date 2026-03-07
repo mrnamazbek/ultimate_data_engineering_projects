@@ -16,13 +16,13 @@ from pyspark.sql.types import (
 KAFKA_BROKER = os.getenv("KAFKA_BROKER", "localhost:9092")
 KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "events")
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
-MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
-MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minioadmin")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "namazbek")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "bekzhanov")
 MINIO_BUCKET = os.getenv("MINIO_BUCKET", "raw-events")
 PG_HOST = os.getenv("POSTGRES_HOST", "localhost")
 PG_PORT = os.getenv("POSTGRES_PORT", "5432")
-PG_USER = os.getenv("POSTGRES_USER", "deuser")
-PG_PASS = os.getenv("POSTGRES_PASSWORD", "depassword")
+PG_USER = os.getenv("POSTGRES_USER", "namazbek")
+PG_PASS = os.getenv("POSTGRES_PASSWORD", "bekzhanov")
 PG_DB = os.getenv("POSTGRES_DB", "dedb")
 
 # Expected event schema

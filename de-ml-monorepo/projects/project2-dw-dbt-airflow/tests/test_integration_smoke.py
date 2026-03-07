@@ -35,8 +35,8 @@ def test_mart_populated():
     conn = psycopg2.connect(
         host=os.getenv("POSTGRES_HOST", "localhost"),
         port=int(os.getenv("POSTGRES_PORT", "5432")),
-        user=os.getenv("POSTGRES_USER", "deuser"),
-        password=os.getenv("POSTGRES_PASSWORD", "depassword"),
+        user=os.getenv("POSTGRES_USER", "namazbek"),
+        password=os.getenv("POSTGRES_PASSWORD", "bekzhanov"),
         dbname=os.getenv("POSTGRES_DB", "dedb"),
     )
     with conn.cursor() as cur:

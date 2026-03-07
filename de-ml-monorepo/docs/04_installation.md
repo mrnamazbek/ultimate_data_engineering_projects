@@ -62,7 +62,7 @@ nano .env
 Обязательные переменные:
 ```env
 # Database
-POSTGRES_USER=deuser
+POSTGRES_USER=namazbek
 POSTGRES_PASSWORD=YourStrongPassword123!
 POSTGRES_DB=fraud_detection
 
@@ -72,7 +72,7 @@ KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
 KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
 
 # MinIO
-MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_USER=namazbek
 MINIO_ROOT_PASSWORD=YourMinioPassword123!
 MINIO_DEFAULT_BUCKETS=fraud-detection,models,checkpoints
 
@@ -202,7 +202,7 @@ open /Applications/Docker.app
 #### PostgreSQL setup
 ```bash
 # Создание базы данных и схем
-docker exec -it postgres psql -U deuser -d postgres <<EOF
+docker exec -it postgres psql -U namazbek -d postgres <<EOF
 CREATE DATABASE fraud_detection;
 \c fraud_detection;
 
@@ -295,7 +295,7 @@ docker-compose run --rm airflow-webserver airflow connections add \
     --conn-type 'postgres' \
     --conn-host 'postgres' \
     --conn-schema 'fraud_detection' \
-    --conn-login 'deuser' \
+    --conn-login 'namazbek' \
     --conn-password 'YourStrongPassword123!' \
     --conn-port 5432
 
@@ -307,7 +307,7 @@ docker-compose up -d airflow-webserver airflow-scheduler
 
 ```bash
 # Создание buckets
-docker exec -it minio mc alias set local http://localhost:9000 minioadmin YourMinioPassword123!
+docker exec -it minio mc alias set local http://localhost:9000 namazbek YourMinioPassword123!
 
 docker exec -it minio mc mb local/fraud-detection
 docker exec -it minio mc mb local/models
@@ -586,10 +586,10 @@ docker-compose down -v
 docker system prune -a
 
 # Backup базы данных
-docker exec postgres pg_dump -U deuser fraud_detection | gzip > backup.sql.gz
+docker exec postgres pg_dump -U namazbek fraud_detection | gzip > backup.sql.gz
 
 # Восстановление из backup
-gunzip -c backup.sql.gz | docker exec -i postgres psql -U deuser fraud_detection
+gunzip -c backup.sql.gz | docker exec -i postgres psql -U namazbek fraud_detection
 ```
 
 ---

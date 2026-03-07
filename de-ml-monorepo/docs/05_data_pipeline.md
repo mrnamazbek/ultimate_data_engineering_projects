@@ -341,7 +341,7 @@ class FraudStreamProcessor:
                     url="jdbc:postgresql://postgres:5432/fraud_detection",
                     table="streaming_aggregates",
                     properties={
-                        "user": "deuser",
+                        "user": "namazbek",
                         "password": "YourStrongPassword123!",
                         "driver": "org.postgresql.Driver"
                     }
@@ -465,7 +465,7 @@ def fraud_detection_pipeline():
             """Извлечение исторических данных из БД"""
             from sqlalchemy import create_engine
             
-            engine = create_engine('postgresql://deuser:password@postgres/fraud_detection')
+            engine = create_engine('postgresql://namazbek:bekzhanov@postgres/fraud_detection')
             
             query = """
             SELECT *
@@ -685,7 +685,7 @@ def fraud_detection_pipeline():
             """Загрузка в data warehouse"""
             from sqlalchemy import create_engine
             
-            engine = create_engine('postgresql://deuser:password@postgres/fraud_detection')
+            engine = create_engine('postgresql://namazbek:bekzhanov@postgres/fraud_detection')
             
             # Загрузка транзакций
             df = pd.read_parquet('/data/staging/combined_transactions.parquet')
@@ -718,7 +718,7 @@ def fraud_detection_pipeline():
             s3 = boto3.client(
                 's3',
                 endpoint_url='http://minio:9000',
-                aws_access_key_id='minioadmin',
+                aws_access_key_id='namazbek',
                 aws_secret_access_key='YourMinioPassword123!'
             )
             
