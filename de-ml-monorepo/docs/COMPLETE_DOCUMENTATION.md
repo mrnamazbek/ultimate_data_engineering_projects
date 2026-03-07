@@ -64,8 +64,8 @@ make stop-all      # Остановить все сервисы
 
 ```
 ┌─────────────────────────────────────────────────┐
-│            DATA SOURCES LAYER                    │
-│  • Banking APIs  • Generators  • Datasets        │
+│            DATA SOURCES LAYER                   │
+│  • Banking APIs  • Generators  • Datasets       │
 └─────────────────────────────────────────────────┘
                         │
 ┌─────────────────────────────────────────────────┐
@@ -79,17 +79,17 @@ make stop-all      # Остановить все сервисы
 └─────────────────────────────────────────────────┘
                         │
 ┌─────────────────────────────────────────────────┐
-│            PROCESSING LAYER                      │
-│  • Airflow  • dbt  • Feature Store (Feast)     │
+│            PROCESSING LAYER                     │
+│  • Airflow  • dbt  • Feature Store (Feast)      │
 └─────────────────────────────────────────────────┘
                         │
 ┌─────────────────────────────────────────────────┐
-│               ML LAYER                           │
+│               ML LAYER                          │
 │  • MLflow  • Model Training  • Model Serving    │
 └─────────────────────────────────────────────────┘
                         │
 ┌─────────────────────────────────────────────────┐
-│            MONITORING LAYER                      │
+│            MONITORING LAYER                     │
 │  • Prometheus  • Grafana  • Custom Dashboards   │
 └─────────────────────────────────────────────────┘
 ```
